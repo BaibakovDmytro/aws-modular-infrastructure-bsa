@@ -1,10 +1,36 @@
-# Игнорируем ключи доступа
-*.pem
-
-# Игнорируем файлы состояния Terraform (в них могут быть пароли)
-*.tfstate
-*.tfstate.backup
+# --- Terraform ---
+# Ignore local terraform directories (contain binaries and providers)
 .terraform/
 
-# Игнорируем логи
+# Ignore Terraform state files (may contain sensitive data/passwords)
+*.tfstate
+*.tfstate.backup
+
+# Ignore variables files that might contain secrets (API keys, passwords)
+*.tfvars
+*.tfvars.json
+
+# --- Security ---
+# Ignore private keys and certificates
+*.pem
+*.key
+*.pub
+
+# --- Python ---
+# Ignore python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# --- Logs & OS ---
+# Ignore logs and system files
 *.log
+.DS_Store
+Thumbs.db
+
+# --- Environment Secrets ---
+# Common files for storing local environment variables
+.env
+.env.local
