@@ -66,3 +66,35 @@ resource "aws_instance" "canada_server" {
     Owner       = "Dmytro Baibakov"
   }
 }
+
+# Archive the Python script into a ZIP file
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/hello_world.py"
+  output_path = "${path.module}/hello_world.zip"
+}
+
+# Create IAM role for Lambda execution
+resource "aws_iam_role" "lambda_role" {
+  name = "qlr_test_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
+  })
+}
+
+# Define the Lambda function resource
+resource "aws_lambda_function" "test_automation_lambda" {
+  filename      = data.archive_file.lambda_zip.output_path
+  function_name = "qlr-test-automation"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "hello_world.lambda_handler"
+  runtime       = "python3.9"
+
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+}
