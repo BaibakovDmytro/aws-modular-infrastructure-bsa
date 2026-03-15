@@ -8,15 +8,23 @@ The infrastructure is decoupled into three independent layers to minimize the **
 
 1. **BASE Layer**: Foundation & Security.
    * **Security Groups**: Strict IP-whitelisting for administrative access.
-   * **IAM Roles**: Least Privilege Principle implementation for EC2 access to S3/DynamoDB.
+   * **IAM Roles**: Least Privilege Principle implementation for EC2, Lambda, and SNS.
 
-2. **SERVICES Layer**: Data Persistence.
-   * **Amazon S3**: Private bucket with versioning enabled and full Public Access Block.
-   * **DynamoDB**: NoSQL storage using `PAY_PER_REQUEST` billing to minimize idle costs.
+2. **SERVICES Layer**: Data Persistence & Messaging.
+   * **Amazon S3**: Private bucket with versioning and full Public Access Block.
+   * **DynamoDB**: NoSQL storage using `PAY_PER_REQUEST` billing.
+   * **SNS (Simple Notification Service)**: Centralized alerting hub with automated access policies for system-wide notifications.
 
 3. **APP Layer**: Compute & Logic.
+   * **AWS Lambda**: Serverless data processing implemented in **Python 3.12** with automated CloudWatch integration.
    * **EC2 Instance**: Automated environment setup via UserData (AWS CLI, Boto3).
-   * **Key Management**: Automated RSA Key Pair generation with secure local permissions (0400).
+   * **CloudWatch Alarms**: Proactive monitoring of resource health and processing logic.
+
+## 📊 Monitoring & Alerts
+The system includes a built-in monitoring framework:
+* **Automated Notifications**: Critical system events are pushed to an SNS topic.
+* **Service Interoperability**: Advanced SNS policies allow CloudWatch to publish alerts while maintaining high security.
+* **Real-time Logging**: All compute resources (Lambda/EC2) are integrated with CloudWatch Logs for audit trails.
 
 ## 📋 Tech Stack & Requirements
 
@@ -28,7 +36,7 @@ The infrastructure is decoupled into three independent layers to minimize the **
 
 * **State Management**: Currently uses `local` backend for simplicity. For production environments, a remote backend (S3 + DynamoDB locking) is recommended.
 * **Network**: Deployed in the Default VPC. Production workloads should consider a Custom VPC with Private Subnets.
-* **SSH Access**: Restricted to a single admin IP — not suitable for team environments without modification.
+* **SSH Access**: Restricted to a single admin IP.
 
 ## 🚀 Deployment Sequence
 
